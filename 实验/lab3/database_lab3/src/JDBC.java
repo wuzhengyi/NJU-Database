@@ -16,7 +16,8 @@ public class JDBC {
      * 写一个连接数据库的方法
      */
     public Connection getConnection(){
-        String url="jdbc:mysql://localhost:3306/lab3";
+        String url="jdbc:mysql://localhost:3306/lab3?useSSL=false";
+        String ssl = "useSSL=false";
         String userName="root";
         String password="wuzhengyi";
         try {
@@ -27,9 +28,9 @@ public class JDBC {
             e.printStackTrace();
         }
         try {
-            conn=DriverManager.getConnection(url, userName, password);
+            conn=DriverManager.getConnection(url,userName, password);
             if(conn!=null){
-                System.out.println("connection successful");
+//                System.out.println("connection successful");
                 statement = conn.createStatement();       //创建Statement对象
             }
         } catch (SQLException e) {
@@ -65,7 +66,7 @@ public class JDBC {
  * 输    入:结果集(数据表)
  * 返回值:空
  */
-    public void printStaff(ResultSet result) {
+    public static void printStaff(ResultSet result) {
         try
         {
             while(result.next()) {
@@ -99,40 +100,48 @@ public class JDBC {
         }
     }
 
+    public void testJDBC(){
+        System.out.println("\n显示Staff表所有数据:");
+        String sql = "SELECT * FROM Staff;";
+        ResultSet result = querySql(sql);//在控制台顯示出查找方法
+        printStaff(result);
+
+        System.out.println("\n删除SNO为128的吴一楠:");
+        executeSql("DELETE FROM Staff WHERE SNO = 128;");
+        result = querySql(sql);
+        printStaff(result);
+
+        System.out.println("\n添加('吴一楠',128,21,3):");
+        executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO) VALUES ('吴一楠',128,21,3);");
+        result = querySql(sql);
+        printStaff(result);
+
+        System.out.println("\n添加('无名字',110,1,100000,2):");
+        executeSql("INSERT INTO Staff VALUES ('无名字',110,1,100000,2);");
+        result = querySql(sql);
+        printStaff(result);
+
+        System.out.println("\n将SNO=129的改为127:");
+        executeSql("update Staff set SNO = 127 where SNO=129;");
+        result = querySql(sql);
+        printStaff(result);
+        System.out.println();
+    }
+
 //    public static void main(String[] args) {
 //        JDBC j=new JDBC();
 //        j.getConnection();
-//        /*
-//        *   SELECT * FROM Staff;
-//        *   SELECT * FROM Project;
-//        *   SELECT * FROM Department;
-//        *   SELECT * FROM Work;
-//        */
-//        System.out.println("\n显示Staff表所有数据:");
-//        String sql = "SELECT * FROM Staff;";
-//        ResultSet result = j.querySql(sql);//在控制台顯示出查找方法
-//        j.printStaff(result);
+//        j.teztJDBC();
 //
-//        System.out.println("\n删除SNO为128的吴一楠:");
-//        j.executeSql("DELETE FROM Staff WHERE SNO = 128;");
-//        result = j.querySql(sql);
-//        j.printStaff(result);
-//
-//        System.out.println("\n添加('吴一楠',128,21,3):");
-//        j.executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO) VALUES ('吴一楠',128,21,3);");
-//        result = j.querySql(sql);
-//        j.printStaff(result);
-//
-//        System.out.println("\n添加('无名字',110,1,100000,2):");
-//        j.executeSql("INSERT INTO Staff VALUES ('无名字',110,1,100000,2);");
-//        result = j.querySql(sql);
-//        j.printStaff(result);
-//
-//        System.out.println("\n将SNO=129的改为127:");
-//        j.executeSql("update Staff set SNO = 127 where SNO=129;");
-//        result = j.querySql(sql);
-//        j.printStaff(result);
-//        System.out.println();
-//
+//        try{
+//            DBCP d = new DBCP();
+//            d.getParameter();
+//            d.testDBCP();
+//        }
+//        catch (SQLException e)
+//        {
+//            e.printStackTrace();
+//        }
 //    }
+
 }
