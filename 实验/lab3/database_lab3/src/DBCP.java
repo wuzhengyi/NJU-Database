@@ -7,15 +7,10 @@ import java.sql.ResultSet;
 public class DBCP {
 
     private Connection conn = null;
-    private Statement stmt;
+    protected Statement stmt;
     private BasicDataSource pool;
 
     public DBCP(){
-        pool = new BasicDataSource();// 连接池
-        pool.setUsername("root");
-        pool.setPassword("wuzhengyi");
-        pool.setDriverClassName("com.mysql.jdbc.Driver");
-        pool.setUrl("jdbc:mysql://localhost:3306/lab3?useSSL=false");
         initDBCP();
     }
 
@@ -27,38 +22,54 @@ public class DBCP {
         System.out.println("----------------");
     }
 
-    public void testDBCP(){
-        try {
-            ResultSet resultSet = stmt.executeQuery("select * from staff;");//执行查询
-        }
-        catch (SQLException e ){
-            e.printStackTrace();
+    public ResultSet testDBCP(){
+        ResultSet resultSet = null;
+        synchronized (stmt){
+            try {
+                while(stmt.isClosed())
+                    getConnection();
+                resultSet = stmt.executeQuery("select * from staff;");//执行查询
+            }
+            catch (SQLException e ){
+                e.printStackTrace();
+            }
         }
 
-
+        return resultSet;
     }
 
     // 纯Java方式设置参数，使用dbcp池
     public void initDBCP() {
 
+        pool = new BasicDataSource();// 连接池
+        pool.setUsername("root");
+        pool.setPassword("wuzhengyi");
+        pool.setDriverClassName("com.mysql.jdbc.Driver");
+        pool.setUrl("jdbc:mysql://localhost:3306/lab3?useSSL=false");
 
         //可以我们自己设置池的相关参数，如最大连接数
-        // pool.setMaxTotal(20);
+//        pool.setMaxTotal(6);
 
+        getConnection();
+    }
+
+    public void getConnection(){
         try {
             // 从它的池中获取连接
             conn = pool.getConnection();
             //语句
-            stmt = conn.createStatement();
+            if(!conn.isClosed())
+                stmt = conn.createStatement();
         }
         catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public void endDBCP(){
+    public synchronized void endDBCP(){
         try {
-            conn.close();//关闭链接
+            if(!conn.isClosed())
+                conn.close();//关闭链接
         }
         catch (SQLException e){
             e.printStackTrace();

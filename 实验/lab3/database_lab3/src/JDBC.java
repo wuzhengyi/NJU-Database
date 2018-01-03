@@ -41,6 +41,14 @@ public class JDBC {
         return conn;
     }
 
+    public void closeConnection(){
+        try {
+            conn.close();
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
     /*
      * 根据sql查询数据库，返回一个结果集
      * 输    入:SQL语句
@@ -101,9 +109,42 @@ public class JDBC {
     }
 
     public void testJDBC(){
-        System.out.println("\n显示Staff表所有数据:");
+        System.out.println("\n创建Staff表:");
+        executeSql("CREATE TABLE Staff\n" +
+                "(\n" +
+                "    SNAME char(8) NOT NULL,\n" +
+                "    SNO int NOT NULL,\n" +
+                "    AGE int DEFAULT 0, -- 默认值约束\n" +
+                "    SALARY int,\n" +
+                "    DNO int, -- FOREIGN KEY REFERENCES Department(DNO) --外键约束，之后再加\n" +
+                "    PRIMARY KEY (SNO)\n" +
+                ");");
         String sql = "SELECT * FROM Staff;";
         ResultSet result = querySql(sql);//在控制台顯示出查找方法
+        printStaff(result);
+
+        System.out.println("\n想Staff表中插入数据:");
+        executeSql("INSERT INTO Staff\n" +
+                "VALUES \n" +
+                "('谢敏辉',131,21,-5,1),\n" +
+                "('吴政亿',129,20,1000,2),\n" +
+                "('吴玉明',130,21,100,3);");
+        sql = "SELECT * FROM Staff;";
+        result = querySql(sql);//在控制台顯示出查找方法
+        printStaff(result);
+
+        System.out.println("\n想Staff表中插入数据:");
+        executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO)\n" +
+                "VALUES\n" +
+                "('吴一楠',128,21,3),\n" +
+                "('许丽君',133,21,2);");
+        sql = "SELECT * FROM Staff;";
+        result = querySql(sql);//在控制台顯示出查找方法
+        printStaff(result);
+
+        System.out.println("\n显示Staff表所有数据:");
+        sql = "SELECT * FROM Staff;";
+        result = querySql(sql);//在控制台顯示出查找方法
         printStaff(result);
 
         System.out.println("\n删除SNO为128的吴一楠:");

@@ -8,16 +8,17 @@ class cmpJDBC extends JDBC{
     //覆盖基类的测试方法,此处连接、查询、关闭Cmp.NR_TEST次。
     @Override
     public void testJDBC(){
-        try {
-            for(int i = 0; i< Cmp.NR_TEST; i++) {
-                getConnection();
-                querySql("select * from staff;");//执行查询
-                conn.close();
-            }
+        for(int i = 0; i< Cmp.NR_TEST; i++) {
+            getConnection();
+            querySql("select * from staff;");//执行查询
+            closeConnection();
         }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
+//        //用一个JDBC连接执行2000语句
+//        getConnection();
+//        for(int i = 0; i< Cmp.NR_TEST; i++) {
+//            querySql("select * from staff;");//执行查询
+//        }
+//        closeConnection();
     }
 }
 
@@ -25,15 +26,24 @@ class cmpJDBC extends JDBC{
 class cmpDBCP extends DBCP{
     //覆盖基类的测试方法,此处使用10个线程的线程池进行连接、查询、关闭共Cmp.NR_TEST次。
     @Override
-    public void testDBCP() {
+    public ResultSet testDBCP() {
         ExecutorService executorService  = Executors.newFixedThreadPool(Cmp.NR_THREADS);//固定的十线程池
         for (int i = 0; i < Cmp.NR_TEST; i++) {
             executorService.execute(() -> {
-                initDBCP();
+                getConnection();
                 super.testDBCP();
                 endDBCP();
             });
         }
+
+//        //用一个连接读写DBCP
+//        getConnection();
+//        for (int i = 0; i < Cmp.NR_TEST; i++) {
+//            executorService.execute(() -> {
+//                super.testDBCP();
+//            });
+//        }
+//        endDBCP();
 
         executorService.shutdown();//不允许再往线程池中添加任务
 
@@ -42,6 +52,7 @@ class cmpDBCP extends DBCP{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return null;
     }
 }
 
@@ -50,8 +61,22 @@ public class Cmp {
     static final int NR_TEST=2000;//
 
     public static void main(String[] args) {
+        /*
+        JDBC jdbc = new JDBC();
+        jdbc.getConnection();
+        jdbc.testJDBC();
+
+        DBCP dbcp = new DBCP();
+        ResultSet resultSet = dbcp.testDBCP();
+        System.out.println("DBCP连接池执行选择语句显示所有Staff:");
+        JDBC.printStaff(resultSet);
+        */
+
         Cmp cmpTwoMethod=new Cmp();
-        cmpTwoMethod.testTwoKiloOpenQueryClose_Jdbc();
+//        cmpTwoMethod.testTwoKiloOpenQueryClose_Jdbc();
+//        cmpTwoMethod.testTwoKiloOpenQueryClose_Jdbc();
+        cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
+        cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
         cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
     }
 
