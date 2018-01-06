@@ -13,7 +13,7 @@ public class JDBC {
     ResultSet rs;
     private Statement statement;
     /**
-     * å†™ä¸€ä¸ªè¿æ¥æ•°æ®åº“çš„æ–¹æ³•
+     * connection database
      */
     public Connection getConnection(){
         String url="jdbc:mysql://localhost:3306/lab3?useSSL=false";
@@ -24,14 +24,14 @@ public class JDBC {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
-            System.out.println("æ‰¾ä¸åˆ°é©±åŠ¨ï¼");
+            System.out.println("ÕÒ²»µ½Çı¶¯£¡");
             e.printStackTrace();
         }
         try {
             conn=DriverManager.getConnection(url,userName, password);
             if(conn!=null){
 //                System.out.println("connection successful");
-                statement = conn.createStatement();       //åˆ›å»ºStatementå¯¹è±¡
+                statement = conn.createStatement();       //create Statement
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -49,11 +49,7 @@ public class JDBC {
         }
 
     }
-    /*
-     * æ ¹æ®sqlæŸ¥è¯¢æ•°æ®åº“ï¼Œè¿”å›ä¸€ä¸ªç»“æœé›†
-     * è¾“    å…¥:SQLè¯­å¥
-     * è¿”å›å€¼:ResultSet æŸ¥è¯¢ç»“æœ
-     */
+
     public ResultSet querySql(String sql) {
         ResultSet result = null;
 
@@ -69,11 +65,6 @@ public class JDBC {
         return result;
     }
 
-    /*
- * æ‰“å°UserInfoè¡¨çš„æ•°æ®
- * è¾“    å…¥:ç»“æœé›†(æ•°æ®è¡¨)
- * è¿”å›å€¼:ç©º
- */
     public static void printStaff(ResultSet result) {
         try
         {
@@ -92,11 +83,7 @@ public class JDBC {
         }
     }
 
-    /*
-   * æ‰§è¡Œæ•°æ®æ“ä½œ
-   * è¾“    å…¥:SQLè¯­å¥
-   * è¿”å›å€¼:ç©º
-   */
+
     public void executeSql(String sql) {
         try
         {
@@ -109,60 +96,60 @@ public class JDBC {
     }
 
     public void testJDBC(){
-        System.out.println("\nåˆ›å»ºStaffè¡¨:");
+        System.out.println("\n Create Staff Table:");
         executeSql("CREATE TABLE Staff\n" +
                 "(\n" +
                 "    SNAME char(8) NOT NULL,\n" +
                 "    SNO int NOT NULL,\n" +
-                "    AGE int DEFAULT 0, -- é»˜è®¤å€¼çº¦æŸ\n" +
+                "    AGE int DEFAULT 0, -- Ä¬ÈÏÖµÔ¼Êø\n" +
                 "    SALARY int,\n" +
-                "    DNO int, -- FOREIGN KEY REFERENCES Department(DNO) --å¤–é”®çº¦æŸï¼Œä¹‹åå†åŠ \n" +
+                "    DNO int, -- FOREIGN KEY REFERENCES Department(DNO) --Íâ¼üÔ¼Êø£¬Ö®ºóÔÙ¼Ó\n" +
                 "    PRIMARY KEY (SNO)\n" +
                 ");");
         String sql = "SELECT * FROM Staff;";
-        ResultSet result = querySql(sql);//åœ¨æ§åˆ¶å°é¡¯ç¤ºå‡ºæŸ¥æ‰¾æ–¹æ³•
+        ResultSet result = querySql(sql);//ÔÚ¿ØÖÆÌ¨ï@Ê¾³ö²éÕÒ·½·¨
         printStaff(result);
 
-        System.out.println("\næƒ³Staffè¡¨ä¸­æ’å…¥æ•°æ®:");
+        System.out.println("\n Insert to Staff Table:");
         executeSql("INSERT INTO Staff\n" +
                 "VALUES \n" +
-                "('è°¢æ•è¾‰',131,21,-5,1),\n" +
-                "('å´æ”¿äº¿',129,20,1000,2),\n" +
-                "('å´ç‰æ˜',130,21,100,3);");
+                "('Ğ»Ãô»Ô',131,21,-5,1),\n" +
+                "('ÎâÕşÒÚ',129,20,1000,2),\n" +
+                "('ÎâÓñÃ÷',130,21,100,3);");
         sql = "SELECT * FROM Staff;";
-        result = querySql(sql);//åœ¨æ§åˆ¶å°é¡¯ç¤ºå‡ºæŸ¥æ‰¾æ–¹æ³•
+        result = querySql(sql);//ÔÚ¿ØÖÆÌ¨ï@Ê¾³ö²éÕÒ·½·¨
         printStaff(result);
 
-        System.out.println("\næƒ³Staffè¡¨ä¸­æ’å…¥æ•°æ®:");
+        System.out.println("\nÏòStaff±íÖĞ²åÈëÊı¾İ:");
         executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO)\n" +
                 "VALUES\n" +
-                "('å´ä¸€æ¥ ',128,21,3),\n" +
-                "('è®¸ä¸½å›',133,21,2);");
+                "('ÎâÒ»éª',128,21,3),\n" +
+                "('ĞíÀö¾ı',133,21,2);");
         sql = "SELECT * FROM Staff;";
-        result = querySql(sql);//åœ¨æ§åˆ¶å°é¡¯ç¤ºå‡ºæŸ¥æ‰¾æ–¹æ³•
+        result = querySql(sql);//ÔÚ¿ØÖÆÌ¨ï@Ê¾³ö²éÕÒ·½·¨
         printStaff(result);
 
-        System.out.println("\næ˜¾ç¤ºStaffè¡¨æ‰€æœ‰æ•°æ®:");
+        System.out.println("\nÏÔÊ¾Staff±íËùÓĞÊı¾İ:");
         sql = "SELECT * FROM Staff;";
-        result = querySql(sql);//åœ¨æ§åˆ¶å°é¡¯ç¤ºå‡ºæŸ¥æ‰¾æ–¹æ³•
+        result = querySql(sql);//ÔÚ¿ØÖÆÌ¨ï@Ê¾³ö²éÕÒ·½·¨
         printStaff(result);
 
-        System.out.println("\nåˆ é™¤SNOä¸º128çš„å´ä¸€æ¥ :");
+        System.out.println("\nÉ¾³ıSNOÎª128µÄÎâÒ»éª:");
         executeSql("DELETE FROM Staff WHERE SNO = 128;");
         result = querySql(sql);
         printStaff(result);
 
-        System.out.println("\næ·»åŠ ('å´ä¸€æ¥ ',128,21,3):");
-        executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO) VALUES ('å´ä¸€æ¥ ',128,21,3);");
+        System.out.println("\nÌí¼Ó('ÎâÒ»éª',128,21,3):");
+        executeSql("INSERT INTO Staff(SNAME,SNO,AGE,DNO) VALUES ('ÎâÒ»éª',128,21,3);");
         result = querySql(sql);
         printStaff(result);
 
-        System.out.println("\næ·»åŠ ('æ— åå­—',110,1,100000,2):");
-        executeSql("INSERT INTO Staff VALUES ('æ— åå­—',110,1,100000,2);");
+        System.out.println("\nÌí¼Ó('ÎŞÃû×Ö',110,1,100000,2):");
+        executeSql("INSERT INTO Staff VALUES ('ÎŞÃû×Ö',110,1,100000,2);");
         result = querySql(sql);
         printStaff(result);
 
-        System.out.println("\nå°†SNO=129çš„æ”¹ä¸º127:");
+        System.out.println("\n½«SNO=129µÄ¸ÄÎª127:");
         executeSql("update Staff set SNO = 127 where SNO=129;");
         result = querySql(sql);
         printStaff(result);

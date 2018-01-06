@@ -1,5 +1,4 @@
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +10,11 @@ class cmpJDBC extends JDBC{
         for(int i = 0; i< Cmp.NR_TEST; i++) {
             getConnection();
             querySql("select * from staff;");//执行查询
+//            executeSql("INSERT INTO Department\n" +
+//                    "VALUES \n" +
+//                    "('清洁工',1,131);");
             closeConnection();
+
         }
 //        //用一个JDBC连接执行2000语句
 //        getConnection();
@@ -57,11 +60,11 @@ class cmpDBCP extends DBCP{
 }
 
 public class Cmp {
-    static final int NR_THREADS=10;//多线程线程数
+    static final int NR_THREADS=8;//多线程线程数
     static final int NR_TEST=2000;//
-
+    private MyTimer timer = new MyTimer();
     public static void main(String[] args) {
-        /*
+
         JDBC jdbc = new JDBC();
         jdbc.getConnection();
         jdbc.testJDBC();
@@ -70,31 +73,46 @@ public class Cmp {
         ResultSet resultSet = dbcp.testDBCP();
         System.out.println("DBCP连接池执行选择语句显示所有Staff:");
         JDBC.printStaff(resultSet);
-        */
 
         Cmp cmpTwoMethod=new Cmp();
-//        cmpTwoMethod.testTwoKiloOpenQueryClose_Jdbc();
-//        cmpTwoMethod.testTwoKiloOpenQueryClose_Jdbc();
-        cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
-        cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
-        cmpTwoMethod.testTwoKiloOpenQueryClose_Dbcp();
+//        cmpTwoMethod.testJdbcTwoThousandTimes();
+        cmpTwoMethod.testJdbcTwoThousandTimes();
+        cmpTwoMethod.testDbcpTwoThousandTimes();
+//        cmpTwoMethod.testDbcpTwoThousandTimes();
+//        cmpTwoMethod.testDbcpTwoThousandTimes();
     }
 
-    public void testTwoKiloOpenQueryClose_Jdbc(){
-        long startTime = System.currentTimeMillis();   //获取开始时间
+    public void testJdbcTwoThousandTimes(){
+        timer.start();
         cmpJDBC jdbc = new cmpJDBC();
         jdbc.testJDBC();
-        long endTime = System.currentTimeMillis();   //获取结束时间
+        timer.end();
         System.out.print("Jdbc耗时:");
-        System.out.println(""+(endTime-startTime)+" ms");
+        System.out.println(timer.getTime() +" ms");
     }
     //DBCP：使用多线程的2000次sql查询
-    public void testTwoKiloOpenQueryClose_Dbcp() {
-        long startTime = System.currentTimeMillis();   //获取开始时间
+    public void testDbcpTwoThousandTimes() {
+        timer.start();
         cmpDBCP dbcp = new cmpDBCP();
         dbcp.testDBCP();
-        long endTime = System.currentTimeMillis();   //获取结束时间
+        timer.end();
         System.out.print("Dbcp使用多线程("+NR_THREADS+"个线程)耗时:");
-        System.out.println(""+(endTime-startTime)+" ms");
+        System.out.println(timer.getTime() +" ms");
+        dbcp.getParameter();
+    }
+}
+
+class MyTimer{
+    long startTime;
+    long endTime;
+    public void start(){
+        startTime = System.currentTimeMillis();   //获取开始时间
+    }
+    public void end() {
+        endTime = System.currentTimeMillis();   //获取结束时间]
+    }
+
+    public long getTime(){
+        return endTime - startTime;
     }
 }
